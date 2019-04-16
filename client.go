@@ -60,7 +60,6 @@ func (c *Client) poll(path string, in interface{}) (io.ReadCloser, error) {
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("Authorization", "Bearer "+c.AccessToken)
 	req.Header.Set("Content-Type", "application/json")
 
 	r, _, err := c.do(req)
