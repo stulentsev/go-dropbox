@@ -47,6 +47,26 @@ func (c *Client) call(path string, in interface{}) (io.ReadCloser, error) {
 	return r, err
 }
 
+// long-poll style endpoint
+func (c *Client) poll(path string, in interface{}) (io.ReadCloser, error) {
+	url := "https://notify.dropboxapi.com/2" + path
+
+	body, err := json.Marshal(in)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", url, bytes.NewReader(body))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Authorization", "Bearer "+c.AccessToken)
+	req.Header.Set("Content-Type", "application/json")
+
+	r, _, err := c.do(req)
+	return r, err
+}
+
 // download style endpoint.
 func (c *Client) download(path string, in interface{}, r io.Reader) (io.ReadCloser, int64, error) {
 	url := "https://content.dropboxapi.com/2" + path

@@ -512,6 +512,28 @@ func normalizePath(s string) string {
 	return s
 }
 
+type ListFolderLongpollInput struct {
+	Cursor string `json:"cursor"`
+	Timeout uint64 `json:"timeout"`
+}
+
+type ListFolderLongpollOutput struct {
+	Changes bool `json:"changes"`
+	Backoff uint64 `json:"backoff,omitempty"`
+}
+
+// ListFolderLongpoll sends a longpoll-style request to be notified of changes
+func (c *Files) ListFolderLongpoll(in *ListFolderLongpollInput) (out *ListFolderLongpollOutput, err error) {
+	body, err := c.poll("/files/list_folder/longpoll", in)
+	if err != nil {
+		return
+	}
+	defer body.Close()
+
+	err = json.NewDecoder(body).Decode(&out)
+	return
+}
+
 const hashBlockSize = 4 * 1024 * 1024
 
 // ContentHash returns the Dropbox content_hash for a io.Reader.
